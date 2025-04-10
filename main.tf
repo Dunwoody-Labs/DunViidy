@@ -2,8 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Git testing comment
-
 resource "aws_iam_role" "dunviidy_lambda_transcription_exec_role" {  # Role for Lambda function to execute Transcribe Job 
   name = "dunviidy_transcription_exec_role"
 
