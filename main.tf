@@ -4,7 +4,7 @@ provider "aws" {
 
 # Git testing comment
 
-resource "aws_iam_role" "dunviidy_lambda_transcription_exec_role" {  # Role for Lambda function to execute Transcribe Job 
+resource "aws_iam_role" "dunviidy_lambda_transcription_exec_role" { # Role for Lambda function to execute Transcribe Job 
   name = "dunviidy_transcription_exec_role"
 
   assume_role_policy = jsonencode({
@@ -41,7 +41,7 @@ resource "aws_iam_role" "dunviidy_lambda_transcription_exec_role" {  # Role for 
 
 resource "aws_iam_role_policy_attachment" "transcribe_lambda_custom" {
   role       = aws_iam_role.dunviidy_lambda_transcription_exec_role.name
-  policy_arn = aws_iam_policy.lambda_transcribe_permissions.arn
+  policy_arn = "arn:aws:iam::aws:policy/AmazonTranscribeFullAccess"
 }
 
 # bucket where encoded videos are sent
