@@ -10,4 +10,4 @@
 *.tfstate.*.backup
 *.tfstate.*.json
 terraform.lock.hcl
-
+lambda/*.zip

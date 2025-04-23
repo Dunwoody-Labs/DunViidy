@@ -1,50 +1,25 @@
-resource "aws_lambda_function" "ses_notifier" {
-  function_name = "ses_notifier"
-  role          = var.ses_lambda_role_arn
-  handler       = "lambda_function.lambda_handler"
-  runtime       = "python3.11"
-  filename      = "${path.module}/ses_notifier.zip"
-  source_code_hash = filebase64sha256("${path.module}/ses_notifier.zip")
-  timeout       = 60
 
-        environment {
-        variables = {
-            BUCKET_NAME  = var.ephemeral_bucket_name
-            INPUT_BUCKET = "dunviidy-input"
-            FROM_EMAIL   = var.from_email
-        }
-    }
+# making the zip files for the functions
+data "archive_file" "transcribe_zip" {
+  type = "zip"
+  source_dir = "${path.module}/lambda_srcs/transcribe_function"
+  output_path = "${path.module}/Transcribe.zip"
 }
 
-
-resource "aws_lambda_permission" "allow_s3" {
-  statement_id  = "AllowExecutionFromS3"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.ses_notifier.arn
-  principal     = "s3.amazonaws.com"
-  source_arn    = "arn:aws:s3:::${var.ephemeral_bucket_name}"
+data "archive_file" "ses_zip" {
+  type = "zip"
+  source_dir = "${path.module}/lambda_srcs/ses_function"
+  output_path = "${path.module}/Ses.zip"
 }
 
-resource "aws_s3_bucket_notification" "on_vtt_upload" {
-  bucket = var.ephemeral_bucket_name
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.ses_notifier.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_suffix       = ".vtt"
-  }
-
-  depends_on = [aws_lambda_permission.allow_s3]
-}
-
-
-
+# transcribe function
 resource "aws_lambda_function" "transcribe_function" {
-  function_name = "transcribe_function"
+  function_name = "dunviidy_transcribe_function"
   role          = aws_iam_role.transcribe_lambda_role.arn
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.11"
-  filename      = "${path.module}/Transcribe.zip"
+  filename      = data.archive_file.transcribe_zip.output_path
+  source_code_hash = filebase64sha256(data.archive_file.transcribe_zip.output_path)
   timeout       = 180
 
     environment {
@@ -54,78 +29,40 @@ resource "aws_lambda_function" "transcribe_function" {
   }
 }
 
-resource "aws_iam_role" "transcribe_lambda_role" {
-  name = "lambda_transcribe_role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      },
-      Effect = "Allow"
-    }]
-  })
+# ses function
+resource "aws_lambda_function" "ses_function" {
+  function_name = "dunviidy_ses_function"
+  role          = aws_iam_role.ses_lambda_role.arn
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.11"
+  filename      = data.archive_file.ses_zip.output_path
+  source_code_hash = filebase64sha256(data.archive_file.ses_zip.output_path)
+  timeout       = 180
+  environment {
+        variables = {
+            BUCKET_NAME  = var.ephemeral_bucket_name
+            INPUT_BUCKET = "dunviidy-input"
+            FROM_EMAIL   = var.from_email
+        }
+  }
 }
 
-resource "aws_iam_policy" "transcribe_policy" {
-  name = "transcribe_policy"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "transcribe:StartTranscriptionJob"
-        ],
-        Resource = "*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject"
-        ],
-        "Resource": [
-         "${var.input_bucket_arn}/*",   
-  "       ${var.ephemeral_bucket_arn}/*" 
-        ]
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "logs:*"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
+resource "aws_lambda_permission" "allow_s3" {
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.ses_function.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = "arn:aws:s3:::${var.ephemeral_bucket_name}"
 }
 
-resource "aws_iam_role_policy_attachment" "transcribe_attachment" {
-  role       = aws_iam_role.transcribe_lambda_role.name
-  policy_arn = aws_iam_policy.transcribe_policy.arn
-}
+resource "aws_s3_bucket_notification" "on_vtt_upload" {
+  bucket = var.ephemeral_bucket_name
 
-resource "aws_iam_policy" "lambda_logs_policy" {
-  name = "lambda_logs_policy"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
-}
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.ses_function.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_suffix       = ".vtt"
+  }
 
-resource "aws_iam_role_policy_attachment" "lambda_logs_attachment" {
-  role       = aws_iam_role.transcribe_lambda_role.name
-  policy_arn = aws_iam_policy.lambda_logs_policy.arn
+  depends_on = [aws_lambda_permission.allow_s3]
 }
