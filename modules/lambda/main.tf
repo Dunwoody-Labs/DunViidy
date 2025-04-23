@@ -12,6 +12,12 @@ data "archive_file" "ses_zip" {
   output_path = "${path.module}/Ses.zip"
 }
 
+data "archive_file" "bucket_zip" {
+  type = "zip"
+  source_dir = "${path.module}/lambda_srcs/ephemeral_bucket_function"
+  output_path = "${path.module}/EphemeralBucket.zip"
+}
+
 # transcribe function
 resource "aws_lambda_function" "transcribe_function" {
   function_name = "dunviidy_transcribe_function"
