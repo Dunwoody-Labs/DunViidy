@@ -99,7 +99,7 @@
 
             // Extract filename without extension
             const filename = selectedFile.name.split('.').slice(0, -1).join('.');
-            const emailBlob = new Blob([`Email: ${email}`], { type: "text/plain" });
+            const emailBlob = new Blob([`${email}`], { type: "text/plain" });
             const emailLink = document.createElement("a");
             emailLink.href = URL.createObjectURL(emailBlob);
             emailLink.download = `email_${filename}.txt`;
