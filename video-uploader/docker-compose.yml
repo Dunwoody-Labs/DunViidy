@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./www:/var/www/html
+      - ./uploads:/uploads
+    depends_on:
+      - php
+
+  php:
+    image: php:8.2-fpm
+    volumes:
+      - ./www:/var/www/html
+      - ./uploads:/uploads
