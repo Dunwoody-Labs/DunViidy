@@ -102,11 +102,11 @@
             const emailBlob = new Blob([`${email}`], { type: "text/plain" });
             const emailLink = document.createElement("a");
             emailLink.href = URL.createObjectURL(emailBlob);
-            emailLink.download = `email_${filename}.txt`;
+            emailLink.download = `${filename}.txt`;
             emailLink.click();
 
             alert("Thank you! You will receive an email in 72 hours.");
-            emailInput.value = ""; // Clear the input field
+            emailInput.value = ""; 
         });
     </script>
 
