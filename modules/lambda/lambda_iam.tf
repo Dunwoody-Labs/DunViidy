@@ -35,7 +35,8 @@ resource "aws_iam_role_policy" "lambda_s3_transcribe_policy" {
           "s3:GetObject",
           "s3:ListBucket",
           "transcribe:StartTranscriptionJob",
-          "transcribe:GetTranscriptionJob"
+          "transcribe:GetTranscriptionJob",
+          "ses:SendEmail"
         ],
         Resource: "*"
       },
