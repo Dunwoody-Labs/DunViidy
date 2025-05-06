@@ -6,7 +6,19 @@ resource "aws_s3_bucket" "input" {
   bucket = "dunviidy-input-${random_id.bucket_suffix.hex}"
 }
 
-resource "aws_s3_bucket" "ephemeral" {
-  bucket = "ephemeral-bucket-${random_id.bucket_suffix.hex}"
-  acl    = "private"
+resource "aws_s3_bucket" "output" {
+  bucket = "dunviidy-output-${random_id.bucket_suffix.hex}"
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  lifecycle_rule {
+    id      = "output-lifecycle-rule"
+    enabled = true
+
+    expiration {
+      days = 2
+    }
+  }
 }

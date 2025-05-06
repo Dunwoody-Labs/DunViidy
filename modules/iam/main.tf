@@ -27,8 +27,12 @@ resource "aws_iam_policy" "ses_lambda_policy" {
         Action = ["s3:GetObject"],
         Resource = [
           "arn:aws:s3:::${var.input_bucket_name}/*",
-          "arn:aws:s3:::${var.ephemeral_bucket_name}/*"
         ]
+      },
+      {
+      "Effect": "Allow",
+      "Action": ["s3:PutObject"],
+      "Resource": "arn:aws:s3:::${var.output_bucket_name}/*"
       },
       {
         Effect = "Allow",

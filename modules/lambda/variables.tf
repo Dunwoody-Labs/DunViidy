@@ -1,20 +1,15 @@
-variable "ephemeral_bucket_name" {
-  description = "Name of the ephemeral S3 bucket"
-  type        = string
-}
-
 variable "input_bucket_name" {
   description = "Name of the input S3 bucket"
   type        = string
 }
 
-variable "ephemeral_bucket_arn" {
-  description = "ARN of the ephemeral S3 bucket"
+variable "input_bucket_arn" {
+  description = "ARN of the input S3 bucket"
   type        = string
 }
 
-variable "input_bucket_arn" {
-  description = "ARN of the input S3 bucket"
+variable "output_bucket_name" {
+  description = "Name of the output S3 bucket"
   type        = string
 }
 
