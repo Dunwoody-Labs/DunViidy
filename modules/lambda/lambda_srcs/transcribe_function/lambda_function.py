@@ -81,38 +81,61 @@ def lambda_handler(event, context):
     video_url = s3.generate_presigned_url(
         'get_object',
         Params={'Bucket': output_bucket, 'Key': video_key},
-        ExpiresIn=3600
+        ExpiresIn=172800
     )
 
     vtt_url = s3.generate_presigned_url(
         'get_object',
         Params={'Bucket': output_bucket, 'Key': vtt_key},
-        ExpiresIn=3600
+        ExpiresIn=172800
     )
 
+# Prepare email
+    subject = "Dunviidy Video and Transcription"
+
+    text_body = f"""
+Hello,
+
+Your video and transcription are ready.
+
+Please right click and save the video in the link below:
+
+Download video: {video_url}
+Download subtitles (.vtt): {vtt_url}
+
+These links will expire in 2 days.
+
+Regards,
+Dunviidy Automated Transcription System
+"""
+
+    html_body = f"""
+<html>
+  <body>
+    <p>Hello,</p>
+    <p>Your video and transcription are ready.</p>
+    <p>Please right click and save the video in the link below:</p>
+    <p>
+      <a href="{video_url}">Download Video</a><br>
+      <a href="{vtt_url}">Download Subtitles (.vtt)</a>
+    </p>
+    <p>These links will expire in 2 days.</p>
+    <p>Regards,<br>Dunviidy Automated Transcription System</p>
+  </body>
+</html>
+"""
+
     # Send SES email
-    subject = "Your Video and Transcription"
-    body = f"""
-    Hello,
-
-    Your video and transcription are ready.
-
-    Download video: {video_url}
-    Download subtitles (.vtt): {vtt_url}
-
-    These links will expire in 1 hour.
-
-    Regards,
-    Automated Transcription System
-    """
-
     try:
         ses.send_email(
             Source=SENDER_EMAIL,
             Destination={'ToAddresses': [email_address]},
             Message={
                 'Subject': {'Data': subject},
-                'Body': {'Text': {'Data': body}}
+                'Body': {
+                    'Text': {'Data': text_body},
+                    'Html': {'Data': html_body}
+                }
             }
         )
         print(f"Email sent to {email_address}")
