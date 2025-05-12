@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import os
-from datetime import datetime  # <-- missing import
+from datetime import datetime 
 
 UPLOAD_FOLDER = '../video_store/proccessed_vids'
 EMAIL_FOLDER = '../video_store/unproccessed_vids'
@@ -19,19 +19,22 @@ def upload():
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
-        return '', 204
+        return file.filename, 200  # Return the filename to be used later
     return 'No file uploaded', 400
 
 @app.route('/submit_email', methods=['POST'])
 def submit_email():
     email = request.form.get('email')
+    video_name = request.form.get('video_name')  # Get the video name from the form
 
     if not email:
         return 'Missing email', 400
 
+    if not video_name:
+        return 'Missing video name', 400
+
     os.makedirs(EMAIL_FOLDER, exist_ok=True)
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f'{timestamp}.txt'
+    filename = f'{os.path.splitext(video_name)[0]}.txt'  # Use the video name for the text file
 
     with open(os.path.join(EMAIL_FOLDER, filename), 'w') as f:
         f.write(email + '\n')
