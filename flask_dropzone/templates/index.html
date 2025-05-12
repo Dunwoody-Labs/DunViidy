@@ -72,7 +72,7 @@
             const formData = new FormData();
             formData.append("email", email);
             if (uploadedVideoName) {
-                formData.append("video", uploadedVideoName);
+                formData.append("video_name", uploadedVideoName);
             }
 
             fetch("/submit_email", {
