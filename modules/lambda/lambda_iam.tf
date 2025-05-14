@@ -68,37 +68,6 @@ resource "aws_iam_role_policy_attachment" "lambda_logs_attachment" {
   policy_arn = aws_iam_policy.lambda_logs_policy.arn
 }
 
-# SES Lambda Role
-resource "aws_iam_role" "ses_lambda_role" {
-  name = "lambda_ses_role_${random_id.iam_suffix.hex}"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      },
-      Effect = "Allow"
-    }]
-  })
-}
-
-# Attach managed policies to SES Lambda
-resource "aws_iam_role_policy_attachment" "lambda_ses_exec_policy" {
-  role       = aws_iam_role.ses_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_ses_s3_policy" {
-  role       = aws_iam_role.ses_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_ses_ses_policy" {
-  role       = aws_iam_role.ses_lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSESFullAccess"
-}
-
 resource "aws_s3_bucket_policy" "transcribe_access" {
   bucket = var.input_bucket_name
 

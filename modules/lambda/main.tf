@@ -5,12 +5,6 @@ data "archive_file" "transcribe_zip" {
   output_path = "${path.module}/Transcribe.zip"
 }
 
-data "archive_file" "ses_zip" {
-  type        = "zip"
-  source_dir  = "${path.module}/lambda_srcs/ses_function"
-  output_path = "${path.module}/Ses.zip"
-}
-
 # Transcribe Lambda
 resource "aws_lambda_function" "transcribe_function" {
   function_name    = "dunviidy_transcribe_function"

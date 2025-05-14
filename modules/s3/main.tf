@@ -4,13 +4,17 @@ resource "random_id" "bucket_suffix" {
 
 resource "aws_s3_bucket" "input" {
   bucket = "dunviidy-input-${random_id.bucket_suffix.hex}"
+  lifecycle {
+    prevent_destroy = false
+  }
 }
+
 
 resource "aws_s3_bucket" "output" {
   bucket = "dunviidy-output-${random_id.bucket_suffix.hex}"
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 
   lifecycle_rule {
