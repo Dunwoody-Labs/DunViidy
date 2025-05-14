@@ -43,21 +43,22 @@ def lambda_handler(event, context):
 
     # Sanitize the transcription job name
     transcribe_job_name = f"job-{int(time.time())}-{base_name}"
-    transcribe_job_name = re.sub(r'[^a-zA-Z0-9._-]', '_', transcribe_job_name)  # Replace invalid characters with underscores
+    transcribe_job_name = re.sub(r'[^a-zA-Z0-9._-]', '_', transcribe_job_name)
     print(f"Sanitized Transcribe job name: {transcribe_job_name}")
 
     # Start Transcribe job
     media_uri = f"s3://{output_bucket}/{video_key}"
-    vtt_key = f"{base_name}.vtt"
 
     transcribe.start_transcription_job(
         TranscriptionJobName=transcribe_job_name,
         Media={'MediaFileUri': media_uri},
         MediaFormat='mp4',
         LanguageCode='en-US',
-        Subtitles={'Formats': ['vtt']},
         OutputBucketName=output_bucket,
-        OutputKey=vtt_key
+        Subtitles={
+            'Formats': ['vtt'],
+            'OutputStartIndex': 1
+        }
     )
 
     print(f"Started Transcribe job: {transcribe_job_name}")
@@ -77,6 +78,22 @@ def lambda_handler(event, context):
 
     print("Transcription completed.")
 
+    # Rename the .vtt file from job name to base name
+    original_vtt_key = f"{transcribe_job_name}.vtt"
+    new_vtt_key = f"{base_name}.vtt"
+
+    try:
+        s3.copy_object(
+            Bucket=output_bucket,
+            CopySource={'Bucket': output_bucket, 'Key': original_vtt_key},
+            Key=new_vtt_key
+        )
+        s3.delete_object(Bucket=output_bucket, Key=original_vtt_key)
+        print(f"Renamed {original_vtt_key} to {new_vtt_key}")
+    except Exception as e:
+        print(f"Error renaming .vtt file: {e}")
+        return
+
     # Generate presigned URLs
     video_url = s3.generate_presigned_url(
         'get_object',
@@ -86,11 +103,11 @@ def lambda_handler(event, context):
 
     vtt_url = s3.generate_presigned_url(
         'get_object',
-        Params={'Bucket': output_bucket, 'Key': vtt_key},
+        Params={'Bucket': output_bucket, 'Key': new_vtt_key},
         ExpiresIn=172800
     )
 
-# Prepare email
+    # Prepare email
     subject = "Dunviidy Video and Transcription"
 
     text_body = f"""
