@@ -33,6 +33,7 @@ resource "aws_iam_role_policy" "lambda_s3_transcribe_policy" {
           "s3:PutBucketPolicy",
           "s3:PutObject",
           "s3:GetObject",
+          "s3:DeleteObject",
           "s3:ListBucket",
           "transcribe:StartTranscriptionJob",
           "transcribe:GetTranscriptionJob",
