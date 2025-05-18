@@ -32,3 +32,5 @@ DataSync unlike the rest of this will need to be configured manually. You will n
 SES needs to be configured manually for every user, it is not scalable in its current moment a fix needs to be implemented down the line.
 
 The Lambda function only triggers on a video being added and the function needs both the video and email.txt file to work.
+
+S3 input bucket lifecycle policy must be configured to only recognize files over 10 bytes for the scope, this is so the datasync metadata file is not deleted every 2 days.
