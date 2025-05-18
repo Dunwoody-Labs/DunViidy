@@ -21,6 +21,10 @@ resource "aws_lambda_function" "transcribe_function" {
       INPUT_BUCKET  = var.input_bucket_name
     }
   }
+
+  tags = {
+    dunviidy = "lambda"
+  }
 }
 
 resource "aws_lambda_permission" "allow_s3_2" {

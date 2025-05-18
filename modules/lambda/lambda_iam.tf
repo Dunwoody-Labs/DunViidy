@@ -16,6 +16,9 @@ resource "aws_iam_role" "transcribe_lambda_role" {
       Effect = "Allow"
     }]
   })
+  tags = {
+    dunviidy = "IAM"
+  }
 }
 
 # Inline policy for S3 and Transcribe permissions
@@ -62,6 +65,9 @@ resource "aws_iam_policy" "lambda_logs_policy" {
       }
     ]
   })
+  tags = {
+    dunviidy = "IAM"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs_attachment" {

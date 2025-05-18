@@ -17,8 +17,3 @@ variable "from_email" {
   description = "Verified SES email address to send from"
   type        = string
 }
-
-variable "ses_lambda_role_arn" {
-  description = "IAM role ARN for the SES Lambda function"
-  type        = string
-}
