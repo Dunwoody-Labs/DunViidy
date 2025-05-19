@@ -28,6 +28,13 @@ DataSync unlike the rest of this will need to be configured manually. You will n
 
 3. Run a test to validate it is properly working, once it is DataSync is now set up.
 
+## Setting up Cost Explorer
+Setting up cost explorer is important for this environment, as it will allow the organization to track the expenses for the cloud portion. Each created resource has been tagged for this purpose, and can be tracked in AWS Cost Explorer.
+1. Navigate to AWS Cost Explorer
+2. Select Cost Allocation Tags on the left menu
+3. Select the tag used to track resources (default: "dunviidy"), and activate
+4. The resources should now be tracked for Cost Analysis
+
 ## Known Problems
 SES needs to be configured manually for every user, it is not scalable in its current moment a fix needs to be implemented down the line.
 
