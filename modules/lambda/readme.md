@@ -8,7 +8,7 @@ It will create:
   - 1 Lambda Function
   - 1 IAM Role
 
-The Lambda function code is located in the lambda_srcs\transcribe_function folder where you can view and edit it to match your specific use case.
+The Lambda function code is located in the lambda_srcs\transcribe_function folder where you can view and edit it to match your specific use case. Currently, the sender Email for SES is hardcoded, and will need to be changed to suit your needs.
 
 ## Lambda Function Flow
 1. The Lambda function is triggered when a video file is created in the S3 Input bucket. It only triggers from .mp4 files and ignores other file types.
@@ -26,3 +26,15 @@ The Lambda function code is located in the lambda_srcs\transcribe_function folde
    - One for the video file
 
 6. Finally, it creates and sends an email to the stored email address containing both presigned URLs.
+
+## IAM 
+
+This function requires a specific set of permissions to opperate:
+1. s3:CreateBucket
+2. s3:PutObject
+3. s3:GetObject
+4. s3:DeleteObject
+5. s3:ListBucket
+6. transcribe:StartTranscriptionJob
+7. transcribe:GetTranscriptionJob
+8. ses:SendEmail
