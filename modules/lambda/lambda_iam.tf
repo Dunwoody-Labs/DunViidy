@@ -21,7 +21,7 @@ resource "aws_iam_role" "transcribe_lambda_role" {
   }
 }
 
-# Inline policy for S3 and Transcribe permissions
+# Inline policy for S3, Transcribe, and SES permissions
 resource "aws_iam_role_policy" "lambda_s3_transcribe_policy" {
   name = "lambda-s3-transcribe"
   role = aws_iam_role.transcribe_lambda_role.id
@@ -70,11 +70,13 @@ resource "aws_iam_policy" "lambda_logs_policy" {
   }
 }
 
+# Attaching the logs policy to the Transcribe Lambda role
 resource "aws_iam_role_policy_attachment" "lambda_logs_attachment" {
   role       = aws_iam_role.transcribe_lambda_role.name
   policy_arn = aws_iam_policy.lambda_logs_policy.arn
 }
 
+# IAM Role for Transcribe Lambda function
 resource "aws_s3_bucket_policy" "transcribe_access" {
   bucket = var.input_bucket_name
 

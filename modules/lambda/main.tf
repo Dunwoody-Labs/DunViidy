@@ -1,11 +1,11 @@
-# Create ZIP archives for Lambda functions
+# Create ZIP archives for Lambda functions for uploaded it to AWS
 data "archive_file" "transcribe_zip" {
   type        = "zip"
   source_dir  = "${path.module}/lambda_srcs/transcribe_function"
   output_path = "${path.module}/Transcribe.zip"
 }
 
-# Transcribe Lambda
+# Transcribe Lambda Function
 resource "aws_lambda_function" "transcribe_function" {
   function_name    = "dunviidy_transcribe_function"
   role             = aws_iam_role.transcribe_lambda_role.arn
@@ -27,6 +27,7 @@ resource "aws_lambda_function" "transcribe_function" {
   }
 }
 
+# Lambda permission to allow S3 bucket to invoke Lambda function
 resource "aws_lambda_permission" "allow_s3_2" {
   statement_id  = "AllowS3Invoke"
   action        = "lambda:InvokeFunction"
@@ -35,6 +36,7 @@ resource "aws_lambda_permission" "allow_s3_2" {
   source_arn    = "arn:aws:s3:::${var.input_bucket_name}"
 }
 
+# Lambda trigger for the input bucket
 resource "aws_s3_bucket_notification" "on_mp4_upload" {
   bucket = var.input_bucket_name
 

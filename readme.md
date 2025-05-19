@@ -18,7 +18,7 @@ The S3 module contains 2 S3 buckets that are used by the Lambda module for its p
 **THIS CAN ONLY BE DONE AFTER YOUR INFRASTRUCTURE IS CREATED**
 DataSync unlike the rest of this will need to be configured manually. You will need to set up a DataSync agent on your on-premises environment and then create 2 locations. A guide for setting up DataSync is here: [DataSync Guide](https://docs.aws.amazon.com/datasync/latest/userguide/deploy-agents.html)
 
-### Setting up DataSync
+### Setting Up DataSync
 1. The locations you will need to configure will be:
    - Location pointing toward the created S3 Input bucket
    - Location pointing toward the physical server's "processed_vids" or a folder where your videos and .txt files are stored

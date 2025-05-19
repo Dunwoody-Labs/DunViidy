@@ -1,0 +1,28 @@
+# Dunviidy Lambda Module
+This module sets up Dunviidy's Lambda function which is used to:
+  - Create VTT files
+  - Move files from the input to output bucket
+  - Send an email to the user who submitted the video and .txt file
+
+It will create:
+  - 1 Lambda Function
+  - 1 IAM Role
+
+The Lambda function code is located in the lambda_srcs\transcribe_function folder where you can view and edit it to match your specific use case.
+
+## Lambda Function Flow
+1. The Lambda function is triggered when a video file is created in the S3 Input bucket. It only triggers from .mp4 files and ignores other file types.
+
+2. Once triggered, the function looks in the input bucket for both a video file and a matching .txt file with the same name. The .txt file should contain an email address which is stored as a variable.
+
+3. After finding both files, it initiates a transcribe job for the video and waits for transcription completion. The output is generated in .vtt format.
+
+4. The function then:
+   - Stores the .vtt file (named same as video) in the S3 Output bucket
+   - Copies the video from Input bucket to Output bucket
+
+5. The function generates two presigned URLs:
+   - One for the .vtt file
+   - One for the video file
+
+6. Finally, it creates and sends an email to the stored email address containing both presigned URLs.
