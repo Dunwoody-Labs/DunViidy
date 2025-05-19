@@ -1,96 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload a Video</title>
-    <link rel="icon" href="https://img.icons8.com/ios-filled/50/000000/video.png" type="image/png">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Dropzone CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload a Video</title>
+  <link rel="icon" href="https://img.icons8.com/ios-filled/50/000000/video.png" type="image/png">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Dropzone CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+
+  <style>
+    .dropzone .dz-remove {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #fff;
+      background-color: #dc3545;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .dropzone .dz-remove:hover {
+      background-color: #c82333;
+      color: #fff;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body class="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
 
-    <div class="container text-center p-4 bg-white rounded shadow">
-        <h2 class="mb-3"><i class="bi bi-cloud-download"></i> Upload a Video</h2>
+  <div class="container text-center p-4 bg-white rounded shadow">
+    <h2 class="mb-3"><i class="bi bi-cloud-download"></i> Upload a Video</h2>
 
-        <!-- Dropzone Upload Form -->
-        <form action="/upload" class="dropzone mb-3" id="videoDropzone" enctype="multipart/form-data"></form>
+    <!-- Dropzone Form -->
+    <form action="/upload" class="dropzone mb-3" id="videoDropzone" enctype="multipart/form-data"></form>
 
-        <!-- Status Message -->
-        <p id="saveStatus" class="mt-3 text-muted"></p>
+    <!-- Status Message -->
+    <div id="alertBox" class="alert d-none" role="alert"></div>
 
-        <hr class="my-4">
+    <hr class="my-4">
 
-        <!-- Email Submission -->
-        <h3 class="mb-3"><i class="bi bi-envelope"></i> Submit Your Email</h3>
-        <form id="emailForm" class="d-flex flex-column align-items-center">
-            <input type="email" class="form-control mb-3" id="emailInput" placeholder="Enter your email" required>
-            <button type="button" id="submitAllButton" class="btn btn-warning mt-2">
-                <i class="bi bi-cloud-upload"></i> Submit Email
-            </button>
-        </form>
-    </div>
+    <!-- Email Form -->
+    <h3 class="mb-3"><i class="bi bi-envelope"></i> Submit Your Email</h3>
+    <form id="emailForm" class="d-flex flex-column align-items-center w-100">
+      <input type="email" class="form-control mb-3" id="emailInput" placeholder="Enter your email" required>
+      <button type="button" id="submitAllButton" class="btn btn-warning mt-2" disabled>
+        <i class="bi bi-cloud-upload"></i> Submit Email
+      </button>
+    </form>
+  </div>
 
-    <!-- JS Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-    <script>
-        const saveStatus = document.getElementById("saveStatus");
-        const emailInput = document.getElementById("emailInput");
-        const submitAllButton = document.getElementById("submitAllButton");
+  <!-- Dropzone & Logic -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+  <script>
+    const emailInput = document.getElementById("emailInput");
+    const submitAllButton = document.getElementById("submitAllButton");
+    const alertBox = document.getElementById("alertBox");
 
-        let uploadedVideoName = null;
+    let uploadedVideoName = null;
 
-        Dropzone.options.videoDropzone = {
-            paramName: "file",
-            maxFilesize: 1000, // MB
-            acceptedFiles: "video/*",
-            init: function () {
-                this.on("success", function (file, response) {
-                    uploadedVideoName = file.name;
-                    saveStatus.innerHTML =
-                        "<i class='bi bi-check-circle-fill text-success'></i> " + file.name + " uploaded successfully!";
-                });
-                this.on("error", function (file, message) {
-                    saveStatus.innerHTML =
-                        "<i class='bi bi-x-circle-fill text-danger'></i> " + message;
-                });
-            }
-        };
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
-        submitAllButton.addEventListener("click", () => {
-            const email = emailInput.value.trim();
-            if (!email) {
-                alert("Please enter a valid email address.");
-                return;
-            }
+    function showAlert(type, message) {
+      alertBox.className = `alert alert-${type}`;
+      alertBox.textContent = message;
+      alertBox.classList.remove("d-none");
 
-            const formData = new FormData();
-            formData.append("email", email);
-            if (uploadedVideoName) {
-                formData.append("video_name", uploadedVideoName);
-            }
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => {
+        alertBox.classList.add("d-none");
+      }, 3000);
+    }
 
-            fetch("/submit_email", {
-                method: "POST",
-                body: formData,
-            })
-            .then((res) => {
-                if (res.ok) {
-                    alert("Thank you! Your email has been saved.");
-                    emailInput.value = "";
-                } else {
-                    alert("Something went wrong submitting your email.");
-                }
-            });
+    Dropzone.options.videoDropzone = {
+      paramName: "file",
+      maxFilesize: 1000,
+      acceptedFiles: "video/*",
+      addRemoveLinks: true,
+      maxFiles: 1,
+      autoProcessQueue: true,
+      autoQueue: true,
+      removeFilesAfterUpload: false,
+
+      init: function () {
+        this.on("success", function (file, response) {
+          uploadedVideoName = response; // use renamed filename from server
+          showAlert("success", `${uploadedVideoName} uploaded successfully!`);
+          if (isValidEmail(emailInput.value.trim())) {
+            submitAllButton.disabled = false;
+          }
         });
-    </script>
 
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        this.on("error", function (file, message) {
+          uploadedVideoName = null;
+          showAlert("danger", `Upload failed: ${message}`);
+          submitAllButton.disabled = true;
+        });
+
+        // "removedfile" event intentionally NOT handled (no message shown)
+      }
+    };
+
+    submitAllButton.addEventListener("click", () => {
+      const email = emailInput.value.trim();
+
+      if (!isValidEmail(email)) {
+        showAlert("warning", "Please enter a valid email address.");
+        return;
+      }
+
+      if (!uploadedVideoName) {
+        showAlert("warning", "Please upload a video before submitting your email.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("video_name", uploadedVideoName);
+
+      fetch("/submit_email", {
+        method: "POST",
+        body: formData,
+      })
+      .then(res => {
+        if (res.ok) {
+          showAlert("success", "Thank you! Confirmation email will be sent within 72 hours.");
+
+          // Reset form state
+          emailInput.value = "";
+          uploadedVideoName = null;
+          submitAllButton.disabled = true;
+
+          // Clear Dropzone preview
+          const dropzoneInstance = Dropzone.forElement("#videoDropzone");
+          dropzoneInstance.removeAllFiles(true);
+        } else {
+          showAlert("danger", "Something went wrong. Please try again.");
+        }
+      })
+      .catch(() => {
+        showAlert("danger", "Server error occurred.");
+      });
+    });
+
+    emailInput.addEventListener("input", () => {
+      if (isValidEmail(emailInput.value.trim()) && uploadedVideoName) {
+        submitAllButton.disabled = false;
+      } else {
+        submitAllButton.disabled = true;
+      }
+    });
+  </script>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
