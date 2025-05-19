@@ -27,6 +27,9 @@ The Lambda function code is located in the lambda_srcs\transcribe_function folde
 
 6. Finally, it creates and sends an email to the stored email address containing both presigned URLs.
 
+## How to use the Function
+Outside of the terraform deployment, the Lambda function has one variable that need to be assigned in order to function properly. This is assigned in the lambda function itself under the name "SENDER_EMAIL". The email needs to be updated with an SES verified email. Once this change has been made, the terraform can be applied.
+
 ## IAM 
 
 This function requires a specific set of permissions to opperate:

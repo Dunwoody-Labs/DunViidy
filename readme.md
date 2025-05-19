@@ -9,7 +9,7 @@ This Terraform's job is to create the subtitles of a video and to distribute tha
 Every module here has readme.md files as well in them for further reading, the ones below are basic summaries. DataSync though should be read as it is the guide on how to set up DataSync for the cloud environment.
 
 ## Lambda Module
-The Lambda module contains a Lambda function and its needed IAM permissions for what it does. The basic overview is that the function, when a video is sent to the input bucket, will trigger and transcribe the video for subtitles in the .vtt format and will store the video in the output bucket. It then sends an email to the email stored in email.txt file in the input bucket and sends it 2 links to the video and .vtt file.
+The Lambda module contains a Lambda function and its needed IAM permissions for what it does. The basic overview is that the function, when a video is sent to the input bucket, will trigger and transcribe the video for subtitles in the .vtt format and will store the video in the output bucket. It then sends an email to the email stored in email.txt file in the input bucket and sends it 2 links to the video and .vtt file. The sender email is currently assigned to a variable in the Lambda function itself, and will need to be changed to suit the needs of the user.
 
 ## S3 Module
 The S3 module contains 2 S3 buckets that are used by the Lambda module for its processing and storing, labeled input and output respectively. It also works with DataSync for storing files from the on-premises environment to the S3 input bucket. The output bucket is used for storing the files processed via the Lambda module.
@@ -27,6 +27,13 @@ DataSync unlike the rest of this will need to be configured manually. You will n
    - Set the DataSync task to run every hour and to transfer all files you need to the .txt and .mp4 files to be sent to the input bucket.
 
 3. Run a test to validate it is properly working, once it is DataSync is now set up.
+
+## Setting up Cost Explorer
+Setting up cost explorer is important for this environment, as it will allow the organization to track the expenses for the cloud portion. Each created resource has been tagged for this purpose, and can be tracked in AWS Cost Explorer.
+1. Navigate to AWS Cost Explorer
+2. Select Cost Allocation Tags on the left menu
+3. Select the tag used to track resources (default: "dunviidy"), and activate
+4. The resources should now be tracked for Cost Analysis
 
 ## Known Problems
 SES needs to be configured manually for every user, it is not scalable in its current moment a fix needs to be implemented down the line.
