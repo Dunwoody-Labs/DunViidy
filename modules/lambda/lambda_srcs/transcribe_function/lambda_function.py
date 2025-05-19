@@ -8,7 +8,6 @@ s3 = boto3.client('s3')
 transcribe = boto3.client('transcribe')
 ses = boto3.client('ses', region_name='us-east-2')
 
-REGION = 'us-east-2'  # Change as needed
 SENDER_EMAIL = 'helmasw@dunwoody.edu'  # Update with your SES-verified email
 
 output_bucket = os.environ['OUTPUT_BUCKET']
