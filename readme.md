@@ -9,7 +9,7 @@ This Terraform's job is to create the subtitles of a video and to distribute tha
 Every module here has readme.md files as well in them for further reading, the ones below are basic summaries. DataSync though should be read as it is the guide on how to set up DataSync for the cloud environment.
 
 ## Lambda Module
-The Lambda module contains a Lambda function and its needed IAM permissions for what it does. The basic overview is that the function, when a video is sent to the input bucket, will trigger and transcribe the video for subtitles in the .vtt format and will store the video in the output bucket. It then sends an email to the email stored in email.txt file in the input bucket and sends it 2 links to the video and .vtt file.
+The Lambda module contains a Lambda function and its needed IAM permissions for what it does. The basic overview is that the function, when a video is sent to the input bucket, will trigger and transcribe the video for subtitles in the .vtt format and will store the video in the output bucket. It then sends an email to the email stored in email.txt file in the input bucket and sends it 2 links to the video and .vtt file. The sender email is currently assigned to a variable in the Lambda function itself, and will need to be changed to suit the needs of the user.
 
 ## S3 Module
 The S3 module contains 2 S3 buckets that are used by the Lambda module for its processing and storing, labeled input and output respectively. It also works with DataSync for storing files from the on-premises environment to the S3 input bucket. The output bucket is used for storing the files processed via the Lambda module.
