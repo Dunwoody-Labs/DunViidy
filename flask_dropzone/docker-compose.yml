@@ -5,7 +5,7 @@ services:
     build: .
     container_name: dunviidy_flask
     volumes:
-      - ./video_store:/video_store
+      -  /home/dunviidy/MediaCMS/video_store:/video_store
       - ./templates:/app/templates
     expose:
       - "5000"
@@ -15,7 +15,7 @@ services:
     image: nginx:alpine
     container_name: dunviidy_nginx
     ports:
-      - "80:80"
+      - "8088:8088"  
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
