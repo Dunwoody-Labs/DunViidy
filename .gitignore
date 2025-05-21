@@ -11,3 +11,6 @@
 *.tfstate.*.json
 terraform.lock.hcl
 lambda/*.zip
+./terraform.tfstate
+*.tfstate.*
+*.tfstate.*.backup
