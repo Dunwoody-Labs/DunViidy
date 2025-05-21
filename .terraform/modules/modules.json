@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"iam","Source":"./modules/iam","Dir":"modules/iam"},{"Key":"lambda","Source":"./modules/lambda","Dir":"modules/lambda"},{"Key":"s3","Source":"./modules/s3","Dir":"modules/s3"}]}
